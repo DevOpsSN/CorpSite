@@ -1,0 +1,59 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  uat_deploy:
+    name: Deploy to UAT
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to UAT
+        run: echo "Deploying to UAT environment..."
+        # Here, replace with actual deploy script/command
+
+  uat_test:
+    name: Run UAT Tests
+    needs: uat_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Automated UAT Tests
+        run: echo "Running UAT tests..."
+        # Replace with actual test command (e.g., Selenium, Cypress)
+
+  prod_deploy:
+    name: Deploy to Production
+    needs: uat_test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to Production
+        run: echo "Deploying to production..."
+        # Replace with actual deployment script
+
